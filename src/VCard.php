@@ -173,6 +173,23 @@ class VCard
     }
 
     /**
+     * Add nickname
+     *
+     * @param  string $nickname The jobtitle for the person.
+     * @return $this
+     */
+    public function addNickname($nickname)
+    {
+        $this->setProperty(
+            'nickname',
+            'NICKNAME' . $this->getCharsetString(),
+            $jobtitle
+        );
+
+        return $this;
+    }
+
+    /**
      * Add role
      *
      * @param  string $role The role for the person.
@@ -526,7 +543,7 @@ class VCard
         // split, wrap and trim trailing separator
         return substr(chunk_split($text, 73, "\r\n "), 0, -3);
     }
-    
+
     /**
      * Escape newline characters according to RFC2425 section 5.8.4.
      *
@@ -538,7 +555,7 @@ class VCard
     {
         $text = str_replace("\r\n", "\\n", $text);
         $text = str_replace("\n", "\\n", $text);
-        
+
         return $text;
     }
 

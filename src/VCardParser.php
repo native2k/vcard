@@ -236,7 +236,13 @@ class VCardParser implements Iterator
                         $cardData->version = $value;
                         break;
                     case 'ORG':
-                        $cardData->organization = $value;
+                        if (strpos($value, ';') > -1) {
+                            $data = $this->parseOrganization($value);
+                            $cardData->organization = $data->organization;
+                            $cardData->department = $data->department;
+                        } else {
+                            $cardData->organization = $value;
+                        }
                         break;
                     case 'URL':
                         if (!isset($cardData->url)) {
@@ -247,6 +253,9 @@ class VCardParser implements Iterator
                         break;
                     case 'TITLE':
                         $cardData->title = $value;
+                        break;
+                    case 'NICKNAME':
+                        $cardData->nickname = $value;
                         break;
                     case 'PHOTO':
                         if ($rawValue) {
@@ -264,6 +273,16 @@ class VCardParser implements Iterator
                         break;
                     case 'NOTE':
                         $cardData->note = $this->unescape($value);
+                        break;
+                    case 'X-ADDRESSBOOKSERVER-KIND':
+                        $cardData->xAddressbookserverKind = $value;
+                        break;
+                    case 'X-ADDRESSBOOKSERVER-MEMBER':
+                        if (isset($cardData->xAddressbookserverMember)) {
+                            array_push($cardData->xAddressbookserverMember, $value);
+                        } else {
+                            $cardData->xAddressbookserverMember = array($value);
+                        }
                         break;
                 }
             }
@@ -291,6 +310,18 @@ class VCardParser implements Iterator
     protected function parseBirthday($value)
     {
         return new \DateTime($value);
+    }
+
+    protected function parseOrganization($value)
+    {
+        @list(
+            $organization,
+            $department,
+        ) = explode(';', $value);
+        return (object) array(
+            'organization' => $organization,
+            'department' => $department,
+        );
     }
 
     protected function parseAddress($value)
