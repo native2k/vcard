@@ -197,6 +197,9 @@ class VCardParser implements Iterator
                 }
 
                 switch (strtoupper($element)) {
+                    case 'UID':
+                        $cardData->uid = $value;
+                        break;
                     case 'FN':
                         $cardData->fullname = $value;
                         break;
